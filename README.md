@@ -1,2 +1,3 @@
-# boardProject
-공부용 저장소
+# boardProjectit
+nextit 프로젝트
+
