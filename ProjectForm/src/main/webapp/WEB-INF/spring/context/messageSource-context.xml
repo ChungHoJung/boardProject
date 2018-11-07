@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+		
+	<bean id="messageSource"
+		  class="org.springframework.context.support.ResourceBundleMessageSource">
+		  <property name="basenames">
+		  	<list>
+				<!--스프링 프레임워크 4.x 이하 버전 -->
+				<!--<value>classpath*:/resource/message-common</value> -->
+				<!--스프링 프레임워크 4.x 이상 버전 -->
+		  		<value>/resource/message-common</value>
+		   	</list>
+		  </property>
+		  <property name="defaultEncoding" value = "utf-8" />
+		  <property name="cacheSeconds" value = "60" />
+		  <property name="useCodeAsDefaultMessage" value="true"></property>
+	
+	</bean>
+	
+	<bean id="propertyService"
+		  class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<!-- propertyService 객체에 *.properties 파일을 등록 -->
+		<property name="locations">
+			<list>
+				<value>classpath*:/db.properties</value>
+				
+		<!-- message properties -> 배열 형식 , property 방식에서는 사용 불가 -->
+				<value>classpath*:/resource/message-common.properties</value>
+			</list>
+		</property>
+<!-- 		properties map 전역 객체에 key, value 값을 등록 사용 방법 -->
+		<!-- *.properties 파일을 사용 안하고 등록 -->
+		<property name="properties">
+			<map>
+				<entry key="admin" value="ㅎㅇㅎㅇㅎ"></entry>
+			</map>
+		</property>
+	</bean>
+		
+</beans>

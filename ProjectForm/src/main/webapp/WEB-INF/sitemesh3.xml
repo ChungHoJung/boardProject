@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sitemesh>
+
+	<!-- was 설정에 적용된 mime-type 설정이 다음과 같은 녀석만 적용 하겠다 -->
+	<mime-type>text/html</mime-type>
+	<mime-type>application/vnd.wap.xhtml+xml</mime-type>
+	<mime-type>application/xhtml+xml</mime-type>
+  
+  
+	<!-- 데코레이터 템플릿을 적용하지 않겠다 -->
+  	<mapping path="/resources/*" exclue="true"/>
+  	<mapping path="/vendor/*" exclue="true"/>
+  	<mapping path="/css/*" exclue="true"/>
+  	<mapping path="/img/*" exclue="true"/>
+  	
+	<!--   	url 을 매핑하는데 .. path 설정된 패턴에 부합이 되면  -->
+	<!--   	decorator 설정된 템플릿을 적용하겠다 -->
+	<!--   	기본 모든 url에 적용을 하겠다 -->
+	<mapping path="/*" decorator="/decorator/main.decorator.jsp"/>
+
+	
+</sitemesh>

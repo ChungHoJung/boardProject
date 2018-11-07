@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 	@Required , @Autowired, @Qualifier, @Resource 등  -->
+	<context:annotation-config />
+	
+	<!-- 어노테이션(@) 사용할 수 있게 -->
+	<context:component-scan base-package="kr.or.nexit">
+			<context:include-filter type="annotation" 
+			expression="org.springframework.stereotype.Controller" />
+			
+			<context:include-filter type="annotation" 
+			expression="org.springframework.stereotype.Service" />
+			
+			<context:include-filter type="annotation" 
+			expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+	
+	
+	<!-- db.properties 안에 있는 datasource를 갖고오는 부분 -->
+	<bean id="spring.dataSource"
+		class = "org.springframework.jdbc.datasource.DriverManagerDataSource">
+	</bean>
+	
+	<!-- spring.dataSource를 dataSource 이름으로 사용하겠다 -->
+	<alias name="spring.dataSource" alias="dataSource" />
+	
+	
+	<!-- Mybatis 설정 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<!-- Mybatis 기본 환경설정 하는 곳 -->
+		<property name="configLocation" value="classpath:/spring-mybatis-config.xml" />
+	<!-- Spring data 갖고오는 부분 -->
+		<property name="dataSource" ref="dataSource" />
+	<!-- sql 사용할 Mapper 위치 속성 선언  -->
+		<property name="mapperLocations" value="classpath*:/mapper/*Mapper.xml" />
+	</bean>
+	
+	<!-- sql 메소드등 정보가 들어있는거 가져오기 ) -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- Mapper Interface 등록 (경로설정) -->
+	<!-- <mybatis-spring:scan base-package="kr.or.nexit.*.impl, kr.or.nexit.*.*.impl" /> -->
+	<mybatis-spring:scan base-package="kr.or.nexit.**.impl" />
+	
+	
+	
+	
+	<!-- 트랜잭션 매니저 등록 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 트랜잭션 AOP 적용 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+	<!-- 트랜잭션을 사용하지 않겠다 -->
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+	<!-- 트랜잭션을 사용 적용 하겠다 -->
+	<!-- insertMemberItem() 이런 메소드명 -->
+			<tx:method name="insert*" rollback-for="Exception" />			
+			<tx:method name="update*" rollback-for="Exception" />			
+			<tx:method name="delete*" rollback-for="Exception" />
+			
+	<!-- 등록 수정 삭제가 같이 있을 경우 -->
+			<tx:method name="put*" rollback-for="Exception" />
+			
+	<!-- 모든 메소드 명에 트랜잭션을 적용 하겠다 -->
+			<tx:method name="*" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut expression="execution(public * kr.or.nexit..impl.*(..))" 
+						id="servicePointCut" />
+	<!-- <aop:pointcut expression="execution(public * kr.or.nexit..impl.*(..))"  -->
+	<!-- id="servicePointCut" /> -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="servicePointCut" />
+	</aop:config>
+		
+</beans>
