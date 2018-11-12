@@ -20,7 +20,7 @@
 	<context:annotation-config />
 	
 	<!-- 어노테이션(@) 사용할 수 있게 -->
-	<context:component-scan base-package="kr.or.nexit">
+	<context:component-scan base-package="kr.or.nextit">
 			<context:include-filter type="annotation" 
 			expression="org.springframework.stereotype.Controller" />
 			
@@ -31,14 +31,38 @@
 			expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
 	
+	<!-- ?? -->
+	<context:property-placeholder location="classpath:/db.properties" />
 	
 	<!-- db.properties 안에 있는 datasource를 갖고오는 부분 -->
 	<bean id="spring.dataSource"
 		class = "org.springframework.jdbc.datasource.DriverManagerDataSource">
+		
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
 	</bean>
 	
 	<!-- spring.dataSource를 dataSource 이름으로 사용하겠다 -->
 	<alias name="spring.dataSource" alias="dataSource" />
+	
+	<!-- db.properties 개발환경 가져오기 -->
+	<bean id="dbcp2.dataSource"
+		class="org.apache.commons.dbcp2.BasicDataSource">
+		
+		<property name="driverClassName" value="${dev.driver}" />	
+		<property name="url" value="${dev.url}" />	
+		<property name="username" value="${dev.username}" />	
+		<property name="password" value="${dev.password}" />
+		
+		<property name="validationQuery" value="select 1 from dual" />
+		<property name="maxTotal" value="300" />	
+		<property name="maxIdle" value="5" />
+		<property name="minIdle" value="4" />
+		<property name="defaultAutoCommit" value="false" />
+	</bean>
+	
 	
 	
 	<!-- Mybatis 설정 -->
@@ -58,7 +82,7 @@
 	
 	<!-- Mapper Interface 등록 (경로설정) -->
 	<!-- <mybatis-spring:scan base-package="kr.or.nexit.*.impl, kr.or.nexit.*.*.impl" /> -->
-	<mybatis-spring:scan base-package="kr.or.nexit.**.impl" />
+	<mybatis-spring:scan base-package="kr.or.nextit.**.impl" />
 	
 	
 	
@@ -90,7 +114,7 @@
 	</tx:advice>
 	
 	<aop:config>
-		<aop:pointcut expression="execution(public * kr.or.nexit..impl.*(..))" 
+		<aop:pointcut expression="execution(public * kr.or.nextit..impl.*(..))" 
 						id="servicePointCut" />
 	<!-- <aop:pointcut expression="execution(public * kr.or.nexit..impl.*(..))"  -->
 	<!-- id="servicePointCut" /> -->
